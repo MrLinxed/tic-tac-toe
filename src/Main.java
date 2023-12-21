@@ -3,7 +3,6 @@ import java.util.Scanner;
 
 public class Main {
 
-    // TODO: Implement draw check
     // TODO: Add replay-ability
     // TODO: Dynamic grid size (via question)
     // TODO: Add an optional 3rd player
@@ -41,6 +40,11 @@ public class Main {
                 Main.clearScreen();
                 Main.renderGameField();
                 System.out.println("The winner is: " + winner);
+            } else if(Main.isDraw()){
+                Main.clearScreen();
+                Main.renderGameField();
+                System.out.println("DRAW! No winner.");
+                break;
             }
 
         } while (!hasWinner);
@@ -87,6 +91,21 @@ public class Main {
             System.out.printf("%s %s%n", y + 1, String.join(" | ", Main.gameState[y]));
             System.out.println(" -----------");
         }
+    }
+
+    public static boolean isDraw() {
+        boolean hasEmptySquare = false;
+        for (int y = 1; y < Main.gameState.length; y++) {
+            for (int x = 1; x < Main.gameState[y].length; x++) {
+                String contents = Main.gameState[y][x];
+                if(contents.isBlank()){
+                    hasEmptySquare = true;
+                    break;
+                }
+            }
+        }
+
+        return !hasEmptySquare;
     }
 
     public static String getWinner() {
