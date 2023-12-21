@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -10,10 +11,10 @@ public class Main {
 
     private static final Scanner cellInput = new Scanner(System.in);
 
-    private static final String[][] gameState = {
-        {" ", " ", " "},
-        {" ", " ", " "},
-        {" ", " ", " "}
+    private static final GameCell[][] gameState = {
+        {new GameCell(), new GameCell(), new GameCell()},
+        {new GameCell(), new GameCell(), new GameCell()},
+        {new GameCell(), new GameCell(), new GameCell()}
     };
 
     public static void main(String[] args) {
@@ -28,9 +29,9 @@ public class Main {
             Main.renderGameField();
             int[] coords = Main.askForCell(isPlayerX);
             if(isPlayerX) {
-                Main.gameState[coords[0]][coords[1]] = "X";
+                Main.gameState[coords[0]][coords[1]].setState(CellState.X);
             } else {
-                Main.gameState[coords[0]][coords[1]] = "O";
+                Main.gameState[coords[0]][coords[1]].setState(CellState.O);
             }
 
             String winner = Main.getWinner();
@@ -75,9 +76,9 @@ public class Main {
         int x = Integer.parseInt(coords[1]) - 1;
         int y = Objects.equals(coords[0], "A") ? 0 : Objects.equals(coords[0], "B") ? 1 : 2;
 
-        String currentValue = Main.gameState[x][y];
+        GameCell pickedCell = Main.gameState[x][y];
 
-        if(!currentValue.isBlank()) {
+        if(pickedCell.isUsed()) {
             System.out.println("Invalid cell picked");
             return askForCell(isPlayerX);
         }
@@ -88,7 +89,8 @@ public class Main {
     public static void renderGameField() {
         System.out.println("  A   B   C");
         for(int y = 0; y < Main.gameState.length; y++) {
-            System.out.printf("%s %s%n", y + 1, String.join(" | ", Main.gameState[y]));
+            String[] rowValues = Arrays.stream(Main.gameState[y]).map(GameCell::render).toArray(String[]::new);
+            System.out.printf("%s %s%n", y + 1, String.join(" | ", rowValues));
             System.out.println(" -----------");
         }
     }
@@ -97,8 +99,8 @@ public class Main {
         boolean hasEmptySquare = false;
         for (int y = 1; y < Main.gameState.length; y++) {
             for (int x = 1; x < Main.gameState[y].length; x++) {
-                String contents = Main.gameState[y][x];
-                if(contents.isBlank()){
+                GameCell gameCell = Main.gameState[y][x];
+                if(!gameCell.isUsed()){
                     hasEmptySquare = true;
                     break;
                 }
@@ -111,23 +113,23 @@ public class Main {
     public static String getWinner() {
         String winner = "";
 
-        for (String[] rowItems : Main.gameState) {
-            String firstItem = rowItems[0];
+        for (GameCell[] rowItems : Main.gameState) {
+            GameCell firstItem = rowItems[0];
 
-            if(firstItem.equals(" ")){
+            if(!firstItem.isUsed()){
                 continue;
             }
 
             boolean allSame = true;
             for (int i = 1; i < rowItems.length; i++) {
-                if (!rowItems[i].equals(firstItem)) {
+                if (rowItems[i].notEquals(firstItem)) {
                     allSame = false;
                     break;
                 }
             }
 
             if(allSame) {
-                winner = firstItem;
+                winner = firstItem.render();
             }
         }
 
@@ -135,25 +137,25 @@ public class Main {
             return winner;
         }
 
-        String[] firstRowItems = Main.gameState[0];
+        GameCell[] firstRowItems = Main.gameState[0];
         for(int x = 0; x < firstRowItems.length; x++){
-            String topItem = firstRowItems[x];
+            GameCell topItem = firstRowItems[x];
 
-            if(topItem.equals(" ")){
+            if(!topItem.isUsed()){
                 continue;
             }
 
             boolean allSame = true;
             //skip first row
             for(int y = 1; y < Main.gameState.length; y++){
-                if (!Main.gameState[y][x].equals(topItem)) {
+                if (Main.gameState[y][x].notEquals(topItem)) {
                     allSame = false;
                     break;
                 }
             }
 
             if(allSame) {
-                winner = topItem;
+                winner = topItem.render();
             }
         }
 
@@ -166,37 +168,32 @@ public class Main {
             topRightBottomLeftDiagonal[x] = (gameSize - 1) - x;
         }
 
-        String firstItem = Main.gameState[0][0];
+        GameCell firstItem = Main.gameState[0][0];
         boolean allSame = true;
         for (int y = 1; y < topLeftBottomRightDiagonal.length; y++) {
             int x = topLeftBottomRightDiagonal[y];
-            if (!Main.gameState[y][x].equals(firstItem)) {
+            if (Main.gameState[y][x].notEquals(firstItem)) {
                 allSame = false;
                 break;
             }
         }
 
         if(allSame) {
-            return firstItem;
+            return firstItem.render();
         }
 
         firstItem = Main.gameState[0][gameSize - 1];
         allSame = true;
         for (int y = 1; y < topRightBottomLeftDiagonal.length; y++) {
             int x = topRightBottomLeftDiagonal[y];
-            System.out.print(y);
-            System.out.print(x);
-            System.out.print("=");
-            System.out.print(Main.gameState[y][x]);
-            System.out.println();
-            if (!Main.gameState[y][x].equals(firstItem)) {
+            if (Main.gameState[y][x].notEquals(firstItem)) {
                 allSame = false;
                 break;
             }
         }
 
         if(allSame) {
-            return firstItem;
+            return firstItem.render();
         }
 
         return winner;
