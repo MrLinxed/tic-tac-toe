@@ -1,12 +1,13 @@
 public class GameCell {
     private CellState state = CellState.EMPTY;
 
-    public void setState(CellState state) {
+    public boolean setState(CellState state) {
         if(this.isUsed()){
-            return;
+            return false;
         }
 
         this.state = state;
+        return true;
     }
     public CellState getState() {
         return state;
@@ -20,11 +21,19 @@ public class GameCell {
         return !state.equals(CellState.EMPTY);
     }
 
-    public String render() {
+    public String getValue() {
         return switch (this.state) {
             case O -> "O";
             case X -> "X";
             default -> " ";
+        };
+    }
+
+    public void render() {
+        switch (this.state) {
+            case O -> System.out.print(" O ");
+            case X -> System.out.print(" X ");
+            default -> System.out.print("   ");
         };
     }
 }

@@ -17,7 +17,11 @@ public class Main {
         {new GameCell(), new GameCell(), new GameCell()}
     };
 
+    private static final GameBoard gameBoard = new GameBoard(3);
+
     public static void main(String[] args) {
+
+
 
         boolean isPlayerX = false;
         boolean hasWinner;
@@ -25,6 +29,8 @@ public class Main {
         do {
             isPlayerX = !isPlayerX;
             Main.clearScreen();
+
+            Main.gameBoard.render();
 
             Main.renderGameField();
             int[] coords = Main.askForCell(isPlayerX);
@@ -72,6 +78,8 @@ public class Main {
             return askForCell(isPlayerX);
         }
 
+        boolean success = Main.gameBoard.setCellState(isPlayerX ? CellState.X : CellState.O, cell);
+
         String[] coords = cell.split("");
         int x = Integer.parseInt(coords[1]) - 1;
         int y = Objects.equals(coords[0], "A") ? 0 : Objects.equals(coords[0], "B") ? 1 : 2;
@@ -89,7 +97,7 @@ public class Main {
     public static void renderGameField() {
         System.out.println("  A   B   C");
         for(int y = 0; y < Main.gameState.length; y++) {
-            String[] rowValues = Arrays.stream(Main.gameState[y]).map(GameCell::render).toArray(String[]::new);
+            String[] rowValues = Arrays.stream(Main.gameState[y]).map(GameCell::getValue).toArray(String[]::new);
             System.out.printf("%s %s%n", y + 1, String.join(" | ", rowValues));
             System.out.println(" -----------");
         }
@@ -129,7 +137,7 @@ public class Main {
             }
 
             if(allSame) {
-                winner = firstItem.render();
+                winner = firstItem.getValue();
             }
         }
 
@@ -155,7 +163,7 @@ public class Main {
             }
 
             if(allSame) {
-                winner = topItem.render();
+                winner = topItem.getValue();
             }
         }
 
@@ -179,7 +187,7 @@ public class Main {
         }
 
         if(allSame) {
-            return firstItem.render();
+            return firstItem.getValue();
         }
 
         firstItem = Main.gameState[0][gameSize - 1];
@@ -193,7 +201,7 @@ public class Main {
         }
 
         if(allSame) {
-            return firstItem.render();
+            return firstItem.getValue();
         }
 
         return winner;
