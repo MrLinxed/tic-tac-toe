@@ -59,7 +59,7 @@ public class GameBoard {
 
     private String getHorizontalWinner() {
         for(int i = 0; i < this.board.length; i += this.boardSize) {
-            GameCell[] cells = Arrays.copyOfRange(this.board, i, this.boardSize);
+            GameCell[] cells = Arrays.copyOfRange(this.board, i, i + this.boardSize);
             if(this.checkArrayOfCellsTheSame(cells)){
                 return cells[0].getValue();
             }
@@ -99,7 +99,7 @@ public class GameBoard {
     }
 
     public GameState getState() {
-
+        return GameState.PLAYING;
     }
 
     public void render() {
@@ -133,6 +133,11 @@ public class GameBoard {
             } else {
                 System.out.print("|");
             }
+        }
+
+        boolean hasWinner = this.hasWinner();
+        if(hasWinner) {
+            System.out.println("The winner is!?::: " +  this.getWinner());
         }
 
         System.out.println();
