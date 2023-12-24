@@ -1,13 +1,12 @@
 public class GameCell {
     private CellState state = CellState.EMPTY;
 
-    public boolean setState(CellState state) {
+    public void setState(CellState state) {
         if(this.isUsed()){
-            return false;
+            return;
         }
 
         this.state = state;
-        return true;
     }
     public CellState getState() {
         return state;

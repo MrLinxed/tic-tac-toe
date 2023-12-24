@@ -1,5 +1,6 @@
 public enum CellState {
     EMPTY,
     X,
-    O
+    O,
+    INVALID
 }

@@ -30,23 +30,51 @@ public class GameBoard {
 
         int columnToNumber = columnIdentifier - 'A';
         int rowToNumber = rowIdentifier - '0' - 1;
-        return columnToNumber + (this.boardSize * rowToNumber);
-    }
+        int index = columnToNumber + (this.boardSize * rowToNumber);
 
-    public boolean setCellState(CellState state, String coordinates) {
-        return this.setCellState(state, this.coordinatesToIndex(coordinates));
-    }
-
-    public boolean setCellState(CellState state, int index) {
         if(index >= this.board.length) {
-            return false;
+            return -1;
         }
 
-        return this.board[index].setState(state);
+        return index;
+    }
+
+    public boolean hasEmptyCell() {
+        boolean hasEmpty = false;
+        for (GameCell gameCell : this.board) {
+            if (!gameCell.isUsed()) {
+                hasEmpty = true;
+                break;
+            }
+        }
+
+        return hasEmpty;
+    }
+
+    public CellState getCellState(int index) {
+        if(index >= this.board.length || index < 0) {
+            return CellState.INVALID;
+        }
+
+        return this.board[index].getState();
+    }
+
+    public void setCellState(CellState state, int index) {
+        if(index >= this.board.length) {
+            return;
+        }
+
+        this.board[index].setState(state);
     }
 
     private boolean checkArrayOfCellsTheSame(GameCell[] cells) {
         GameCell firstCell = cells[0];
+
+        // Since this is being used to check if whole row is filled. if first cell is empty, return false.
+        // Otherwise, the row can't be the same anymore
+        if(!firstCell.isUsed()){
+            return false;
+        }
 
         for (int i = 1; i < cells.length; i++) {
             if (firstCell.notEquals(cells[i])) {
@@ -84,6 +112,32 @@ public class GameBoard {
         return "";
     }
 
+    private String getDiagonalWinner() {
+        List<GameCell> topRightBottomLeft = new ArrayList<>();
+        List<GameCell> topLeftBottomRight = new ArrayList<>();
+
+        int stepSize = boardSize - 1;
+        for(int i = stepSize; i < this.board.length - stepSize; i += stepSize) {
+            topRightBottomLeft.add(this.board[i]);
+        }
+
+        GameCell[] convertedCells = topRightBottomLeft.toArray(new GameCell[0]);
+        if(this.checkArrayOfCellsTheSame(convertedCells)){
+            return convertedCells[0].getValue();
+        }
+
+        for(int i = 0; i < this.board.length; i += boardSize + 1) {
+            topLeftBottomRight.add(this.board[i]);
+        }
+
+        convertedCells = topLeftBottomRight.toArray(new GameCell[0]);
+        if(this.checkArrayOfCellsTheSame(convertedCells)){
+            return convertedCells[0].getValue();
+        }
+
+        return "";
+    }
+
     public String getWinner() {
         String horizontalWinner = this.getHorizontalWinner();
         if(!horizontalWinner.isBlank()) return horizontalWinner;
@@ -91,15 +145,14 @@ public class GameBoard {
         String verticalWinner = this.getVerticalWinner();
         if(!verticalWinner.isBlank()) return verticalWinner;
 
+        String getDiagonalWinner = this.getDiagonalWinner();
+        if(!getDiagonalWinner.isBlank()) return getDiagonalWinner;
+
         return "";
     }
 
     public boolean hasWinner() {
         return !this.getWinner().isBlank();
-    }
-
-    public GameState getState() {
-        return GameState.PLAYING;
     }
 
     public void render() {
@@ -134,14 +187,5 @@ public class GameBoard {
                 System.out.print("|");
             }
         }
-
-        boolean hasWinner = this.hasWinner();
-        if(hasWinner) {
-            System.out.println("The winner is!?::: " +  this.getWinner());
-        }
-
-        System.out.println();
-        System.out.println();
-        System.out.println();
     }
 }
