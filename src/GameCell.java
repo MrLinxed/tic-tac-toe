@@ -24,6 +24,7 @@ public class GameCell {
         return switch (this.state) {
             case O -> "O";
             case X -> "X";
+            case Y -> "Y";
             default -> " ";
         };
     }
@@ -32,6 +33,7 @@ public class GameCell {
         switch (this.state) {
             case O -> System.out.print(" O ");
             case X -> System.out.print(" X ");
+            case Y -> System.out.print(" Y ");
             default -> System.out.print("   ");
         };
     }

@@ -18,7 +18,15 @@ public class Main {
 
             } while (boardSize < 3 || boardSize > 10);
 
-            handleGame(boardSize);
+            int playerAmount;
+            do {
+                System.out.println("===================");
+                System.out.println("Amount of players? (2-3): ");
+                playerAmount = Main.cellInput.nextInt();
+
+            } while (playerAmount < 2 || playerAmount > 3);
+
+            handleGame(boardSize, playerAmount);
 
             String answer;
             do {
@@ -35,21 +43,23 @@ public class Main {
         }
     }
 
-    public static void handleGame(int boardSize) {
-        boolean isPlayerX = false;
+    public static void handleGame(int boardSize, int playerAmount) {
+        CellState currentPlayer = CellState.Y;
         Main.gameBoard = new GameBoard(boardSize);
 
         while (true) {
-            isPlayerX = !isPlayerX;
+            // Next player
+            currentPlayer = switch(currentPlayer) {
+                case X -> CellState.O;
+                case O -> playerAmount == 3 ? CellState.Y : CellState.X;
+                default -> CellState.X;
+            };
+
             Main.clearScreen();
             Main.gameBoard.render();
 
-            int index = Main.askForCell(isPlayerX);
-            if(isPlayerX) {
-                Main.gameBoard.setCellState(CellState.X, index);
-            } else {
-                Main.gameBoard.setCellState(CellState.O, index);
-            }
+            int index = Main.askForCell(currentPlayer);
+            Main.gameBoard.setCellState(currentPlayer, index);
 
             if(Main.gameBoard.hasWinner()) {
                 Main.clearScreen();
@@ -69,20 +79,20 @@ public class Main {
         for (int i = 0; i < 50; ++i) System.out.println();
     }
 
-    public static int askForCell(Boolean isPlayerX) {
-        System.out.println("Player - " + (isPlayerX ? "X" : "O") + " - Pick A Cell:");
+    public static int askForCell(CellState currentPlayer) {
+        System.out.println("Player - " + currentPlayer.toString() + " - Pick A Cell:");
         String cell = Main.cellInput.nextLine();
 
         if (cell.isBlank()) {
             System.out.println("No option picked");
-            return askForCell(isPlayerX);
+            return askForCell(currentPlayer);
         }
 
         int index = Main.gameBoard.coordinatesToIndex(cell.toUpperCase());
 
         if(Main.gameBoard.getCellState(index) != CellState.EMPTY) {
             System.out.println("Incorrect cell picked");
-            return askForCell(isPlayerX);
+            return askForCell(currentPlayer);
         }
 
         return index;
