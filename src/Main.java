@@ -1,18 +1,36 @@
 import java.util.Scanner;
 
 public class Main {
-
-    // TODO: Add replay-ability
     // TODO: Dynamic grid size (via question)
     // TODO: Add an optional 3rd player
     // TODO: Add a read.me
 
     private static final Scanner cellInput = new Scanner(System.in);
 
-    private static final GameBoard gameBoard = new GameBoard(3);
+    private static GameBoard gameBoard;
 
     public static void main(String[] args) {
+        while (true) {
+            handleGame();
+
+            String answer;
+            do {
+                System.out.println("===================");
+                System.out.println("Play again? (Y/N): ");
+                answer = Main.cellInput.nextLine();
+                answer = answer.isBlank() ? "Y" : answer.toUpperCase();
+
+            } while (!answer.equals("N") && !answer.equals("Y"));
+
+            if(answer.equals("N")) {
+                break;
+            }
+        }
+    }
+
+    public static void handleGame() {
         boolean isPlayerX = false;
+        Main.gameBoard = new GameBoard(2);
 
         while (true) {
             isPlayerX = !isPlayerX;
@@ -29,7 +47,7 @@ public class Main {
             if(Main.gameBoard.hasWinner()) {
                 Main.clearScreen();
                 Main.gameBoard.render();
-                System.out.println("The winner is: " + Main.gameBoard.getWinner());
+                System.out.println("Game over! The winner is: " + Main.gameBoard.getWinner());
                 break;
             } else if(!Main.gameBoard.hasEmptyCell()){
                 Main.clearScreen();
@@ -37,9 +55,7 @@ public class Main {
                 System.out.println("DRAW! No winner.");
                 break;
             }
-
         };
-
     }
 
     public static void clearScreen() {
