@@ -1,7 +1,6 @@
 import java.util.Scanner;
 
 public class Main {
-    // TODO: Dynamic grid size (via question)
     // TODO: Add an optional 3rd player
     // TODO: Add a read.me
 
@@ -11,7 +10,15 @@ public class Main {
 
     public static void main(String[] args) {
         while (true) {
-            handleGame();
+            int boardSize;
+            do {
+                System.out.println("===================");
+                System.out.println("Board size? (3-10): ");
+                boardSize = Main.cellInput.nextInt();
+
+            } while (boardSize < 3 || boardSize > 10);
+
+            handleGame(boardSize);
 
             String answer;
             do {
@@ -28,9 +35,9 @@ public class Main {
         }
     }
 
-    public static void handleGame() {
+    public static void handleGame(int boardSize) {
         boolean isPlayerX = false;
-        Main.gameBoard = new GameBoard(2);
+        Main.gameBoard = new GameBoard(boardSize);
 
         while (true) {
             isPlayerX = !isPlayerX;
@@ -55,7 +62,7 @@ public class Main {
                 System.out.println("DRAW! No winner.");
                 break;
             }
-        };
+        }
     }
 
     public static void clearScreen() {
