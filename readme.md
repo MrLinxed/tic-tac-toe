@@ -9,5 +9,5 @@ Created because I hadn't programmed in Java for at least 8 years. So I wanted to
 
 ## To Run
 
-1. Download `tictactoe.jar`
+1. Download `tictactoe.jar` from [here](https://github.com/MrLinxed/tic-tac-toe/releases/latest)
 2. Run `java -jar tictactoe.jar`
