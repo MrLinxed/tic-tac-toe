@@ -1,8 +1,6 @@
 import java.util.Scanner;
 
 public class Main {
-    // TODO: Add a read.me
-
     private static final Scanner cellInput = new Scanner(System.in);
 
     private static GameBoard gameBoard;
